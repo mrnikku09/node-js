@@ -1,40 +1,32 @@
-const express=require('express')
-const app=express()
-const router=express.Router();
+const express = require('express')
+const route = express.Router();
+const app = express();
 
 
-const path = require('path');
-const fs = require('fs');
-const bodyParser = require('body-parser');
+
 const userModel = require('../Model/userModel');
-const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
 
 
 
-app.use(cookieParser())
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public')))
-app.set('view engine', 'ejs')
 
 
 
 // ************************Login***********************
-router.get('/login', (req, res) => {
-    const cookieData = req.cookies.USER_AUTH_TOKEN
+route.get('/login', (req, res) => {
+    const cookieData = req.cookies?.USER_AUTH_TOKEN
 
     // return res.send(cookieData)
     if (!cookieData) {
 
         res.render("./login/login")
-    }else{
-        res.redirect('/')
+    } else {
+        res.redirect('/web/dashboard')
     }
 })
 
-router.post('/logincheck', async (req, res) => {
+route.post('/logincheck', async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -55,7 +47,7 @@ router.post('/logincheck', async (req, res) => {
                 userData._token = jwttoken
                 userData.save()
                 res.cookie("USER_AUTH_TOKEN", jwttoken)
-                return res.redirect('/')
+                return res.redirect('/web/dashboard')
 
             } else {
                 res.send('Something Went Wrong')
@@ -66,32 +58,33 @@ router.post('/logincheck', async (req, res) => {
 })
 
 
-router.get('/logout', (req, res) => {
+route.get('/logout', (req, res) => {
 
 
     res.cookie("USER_AUTH_TOKEN", "")
-    res.redirect('/login')
+    res.redirect('/web/login')
 })
 
 
 // Common User Data
 
-router.use(async (req, res, next) => {
-    const userToken = req.cookies.USER_AUTH_TOKEN;
+route.use(async (req, res, next) => {
+    const userToken = req.cookies?.USER_AUTH_TOKEN;
     const user = await userModel.findOne({ _token: userToken });
-    // console.log(user)
     if (!user) {
-        app.locals.userSettingData = ""
-        res.redirect('/login')
+        userSettingData = ""
+        res.redirect('/web/login')
     } else {
-        app.locals.userSettingData = user
+        userSettingData = user
     }
+
+    // return res.send(userSettingData)
     next();
 })
 
 // ************************Dashboard***********************
-router.get('/', (req, res) => {
-    const cookieData = req.cookies.USER_AUTH_TOKEN
+route.get('/dashboard', (req, res) => {
+    const cookieData = req.cookies?.USER_AUTH_TOKEN
 
     // return res.send(cookieData)
     if (!cookieData) {
@@ -100,19 +93,22 @@ router.get('/', (req, res) => {
         const title = "Dashboard"
         res.render('./dashboard/dashboard', { 'title': title })
     }
+    // const title = "Dashboard"
+
+    //     res.render('./dashboard/dashboard', { 'title': title })
 })
 
 
 
 // ************************User***********************
-router.get('/user', async (req, res) => {
+route.get('/user', async (req, res) => {
     const title = "User"
     const userData = await userModel.find()
     // return res.send(userData)
     res.render('./user/alluser.ejs', { "title": title, 'userData': userData })
 })
 
-router.get('/add-user/:_id?', async (req, res) => {
+route.get('/add-user/:_id?', async (req, res) => {
     const title = "User"
     const { _id } = req.params;
     var userData = ""
@@ -124,7 +120,7 @@ router.get('/add-user/:_id?', async (req, res) => {
 })
 
 
-router.post('/add-user-process', (req, res) => {
+route.post('/add-user-process', (req, res) => {
     // return res.send(req.body)
     const { _id, name, username, email, password } = req.body
     if (!name || !username || !email || !password) {
@@ -143,17 +139,17 @@ router.post('/add-user-process', (req, res) => {
                 } else {
                     const userObj = await userModel.create({ name, username, email, "password": hashpassword })
                 }
-                res.redirect('/user')
+                res.redirect('/web/user')
             }
         })
     })
 })
 
 
-router.get('/delete-user/:_id', async (req, res) => {
+route.get('/delete-user/:_id', async (req, res) => {
     const { _id } = req.params
     await userModel.deleteOne({ _id: _id })
-    res.redirect('/user')
+    res.redirect('/web/user')
 })
 
 
@@ -162,7 +158,7 @@ router.get('/delete-user/:_id', async (req, res) => {
 
 
 
-router.get('/cookie', (req, res) => {
+route.get('/cookie', (req, res) => {
     console.clear();
     res.cookie('namee', 'niteshe');
     // res.cookie('name','nitesh');
@@ -171,7 +167,7 @@ router.get('/cookie', (req, res) => {
 
 
 
-router.get('/encrypt-password', (req, res) => {
+route.get('/encrypt-password', (req, res) => {
     bcrypt.genSalt(10, function (err, salt) {
         bcrypt.hash("password", salt, function (err, hash) {
             // Store hash in your password DB.
@@ -181,7 +177,7 @@ router.get('/encrypt-password', (req, res) => {
     });
 })
 
-router.get('/dcrypt-password', (req, res) => {
+route.get('/dcrypt-password', (req, res) => {
     bcrypt.compare("password", req.cookies.hash, function (err, result) {
         // result == true
         res.send(result)
@@ -193,13 +189,13 @@ router.get('/dcrypt-password', (req, res) => {
 
 
 
-router.get('/jwt-token-set', (req, res) => {
+route.get('/jwt-token-set', (req, res) => {
     const token = jwt.sign({ "email": "nitesh1@gmail.com" }, 'password')
     res.cookie('_token', token)
     res.send(token)
 })
 
-router.get('/jwt-token-unset', (req, res) => {
+route.get('/jwt-token-unset', (req, res) => {
     // jwt.verify(req.)
     // res.send(req.cookies._token)
 
@@ -209,4 +205,4 @@ router.get('/jwt-token-unset', (req, res) => {
 
 
 
-module.exports=router
+module.exports = route
