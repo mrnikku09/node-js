@@ -17,7 +17,6 @@ const jwt = require('jsonwebtoken');
 route.get('/login', (req, res) => {
     const cookieData = req.cookies?.USER_AUTH_TOKEN
 
-    // return res.send(cookieData)
     if (!cookieData) {
 
         res.render("./login/login")
@@ -38,12 +37,9 @@ route.post('/logincheck', async (req, res) => {
         return res.send("Something Went Wrong")
     }
     else {
-        // return res.send(userData)
         bcrypt.compare(password, userData.password, (err, result) => {
-            // res.send(result)
             if (result == true) {
                 const jwttoken = jwt.sign({ "email": userData.email }, userData.password)
-                // return res.send(jwttoken)
                 userData._token = jwttoken
                 userData.save()
                 res.cookie("USER_AUTH_TOKEN", jwttoken)
@@ -59,14 +55,12 @@ route.post('/logincheck', async (req, res) => {
 
 
 route.get('/logout', (req, res) => {
-
-
     res.cookie("USER_AUTH_TOKEN", "")
     res.redirect('/web/login')
 })
 
 
-// Common User Data
+// ************************Common User Data***********************
 
 route.use(async (req, res, next) => {
     const userToken = req.cookies?.USER_AUTH_TOKEN;
@@ -78,7 +72,6 @@ route.use(async (req, res, next) => {
         userSettingData = user
     }
 
-    // return res.send(userSettingData)
     next();
 })
 
@@ -86,16 +79,13 @@ route.use(async (req, res, next) => {
 route.get('/dashboard', (req, res) => {
     const cookieData = req.cookies?.USER_AUTH_TOKEN
 
-    // return res.send(cookieData)
     if (!cookieData) {
         return res.redirect('/login')
     } else {
         const title = "Dashboard"
         res.render('./dashboard/dashboard', { 'title': title })
     }
-    // const title = "Dashboard"
 
-    //     res.render('./dashboard/dashboard', { 'title': title })
 })
 
 
@@ -104,7 +94,6 @@ route.get('/dashboard', (req, res) => {
 route.get('/user', async (req, res) => {
     const title = "User"
     const userData = await userModel.find()
-    // return res.send(userData)
     res.render('./user/alluser.ejs', { "title": title, 'userData': userData })
 })
 
@@ -115,27 +104,34 @@ route.get('/add-user/:_id?', async (req, res) => {
     if (_id && _id != '') {
         userData = await userModel.findOne({ _id: _id })
     }
-    // return res.send(userData)
     res.render('./user/adduser.ejs', { "title": title, "userData": userData })
 })
 
 
 route.post('/add-user-process', (req, res) => {
-    // return res.send(req.body)
     const { _id, name, username, email, password } = req.body
-    if (!name || !username || !email || !password) {
+    if (!name || !username || !email) {
+        return res.redirect(req.get('referer'));
+    }
+    if (!_id && !password) {
         return res.redirect(req.get('referer'));
     }
 
     bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(password, salt, async (err, hashpassword) => {
-            // return console.log(res)
             if (hashpassword) {
                 if (_id && _id != "") {
-                    // return res.send(req.body)
-                    await userModel.updateOne({ _id: _id },
-                        { name, username, email, "password": hashpassword }
-                    )
+
+                    let userObj = await userModel.findOne({ _id: _id })
+
+                    if (!password) {
+                    } else {
+                        userObj.password = hashpassword
+                    }
+                    userObj.name = name
+                    userObj.username = username
+                    userObj.email = email
+                    userObj.save()
                 } else {
                     const userObj = await userModel.create({ name, username, email, "password": hashpassword })
                 }
@@ -155,53 +151,6 @@ route.get('/delete-user/:_id', async (req, res) => {
 
 
 
-
-
-
-route.get('/cookie', (req, res) => {
-    console.clear();
-    res.cookie('namee', 'niteshe');
-    // res.cookie('name','nitesh');
-    res.send('done')
-})
-
-
-
-route.get('/encrypt-password', (req, res) => {
-    bcrypt.genSalt(10, function (err, salt) {
-        bcrypt.hash("password", salt, function (err, hash) {
-            // Store hash in your password DB.
-            res.cookie("hash", hash)
-            res.send(hash)
-        });
-    });
-})
-
-route.get('/dcrypt-password', (req, res) => {
-    bcrypt.compare("password", req.cookies.hash, function (err, result) {
-        // result == true
-        res.send(result)
-    });
-
-})
-
-
-
-
-
-route.get('/jwt-token-set', (req, res) => {
-    const token = jwt.sign({ "email": "nitesh1@gmail.com" }, 'password')
-    res.cookie('_token', token)
-    res.send(token)
-})
-
-route.get('/jwt-token-unset', (req, res) => {
-    // jwt.verify(req.)
-    // res.send(req.cookies._token)
-
-    const verifytoken = jwt.verify(req.cookies._token, 'password')
-    res.send(verifytoken)
-})
 
 
 
