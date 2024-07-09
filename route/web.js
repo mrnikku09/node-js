@@ -1,11 +1,12 @@
-const express = require('express');
-const app = express();
+const express=require('express')
+const app=express()
+const router=express.Router();
 
 
 const path = require('path');
 const fs = require('fs');
 const bodyParser = require('body-parser');
-const userModel = require('./Model/userModel');
+const userModel = require('../Model/userModel');
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
@@ -21,7 +22,7 @@ app.set('view engine', 'ejs')
 
 
 // ************************Login***********************
-app.get('/login', (req, res) => {
+router.get('/login', (req, res) => {
     const cookieData = req.cookies.USER_AUTH_TOKEN
 
     // return res.send(cookieData)
@@ -33,7 +34,7 @@ app.get('/login', (req, res) => {
     }
 })
 
-app.post('/logincheck', async (req, res) => {
+router.post('/logincheck', async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -65,7 +66,7 @@ app.post('/logincheck', async (req, res) => {
 })
 
 
-app.get('/logout', (req, res) => {
+router.get('/logout', (req, res) => {
 
 
     res.cookie("USER_AUTH_TOKEN", "")
@@ -75,7 +76,7 @@ app.get('/logout', (req, res) => {
 
 // Common User Data
 
-app.use(async (req, res, next) => {
+router.use(async (req, res, next) => {
     const userToken = req.cookies.USER_AUTH_TOKEN;
     const user = await userModel.findOne({ _token: userToken });
     // console.log(user)
@@ -89,7 +90,7 @@ app.use(async (req, res, next) => {
 })
 
 // ************************Dashboard***********************
-app.get('/', (req, res) => {
+router.get('/', (req, res) => {
     const cookieData = req.cookies.USER_AUTH_TOKEN
 
     // return res.send(cookieData)
@@ -104,14 +105,14 @@ app.get('/', (req, res) => {
 
 
 // ************************User***********************
-app.get('/user', async (req, res) => {
+router.get('/user', async (req, res) => {
     const title = "User"
     const userData = await userModel.find()
     // return res.send(userData)
     res.render('./user/alluser.ejs', { "title": title, 'userData': userData })
 })
 
-app.get('/add-user/:_id?', async (req, res) => {
+router.get('/add-user/:_id?', async (req, res) => {
     const title = "User"
     const { _id } = req.params;
     var userData = ""
@@ -123,7 +124,7 @@ app.get('/add-user/:_id?', async (req, res) => {
 })
 
 
-app.post('/add-user-process', (req, res) => {
+router.post('/add-user-process', (req, res) => {
     // return res.send(req.body)
     const { _id, name, username, email, password } = req.body
     if (!name || !username || !email || !password) {
@@ -149,7 +150,7 @@ app.post('/add-user-process', (req, res) => {
 })
 
 
-app.get('/delete-user/:_id', async (req, res) => {
+router.get('/delete-user/:_id', async (req, res) => {
     const { _id } = req.params
     await userModel.deleteOne({ _id: _id })
     res.redirect('/user')
@@ -161,7 +162,7 @@ app.get('/delete-user/:_id', async (req, res) => {
 
 
 
-app.get('/cookie', (req, res) => {
+router.get('/cookie', (req, res) => {
     console.clear();
     res.cookie('namee', 'niteshe');
     // res.cookie('name','nitesh');
@@ -170,7 +171,7 @@ app.get('/cookie', (req, res) => {
 
 
 
-app.get('/encrypt-password', (req, res) => {
+router.get('/encrypt-password', (req, res) => {
     bcrypt.genSalt(10, function (err, salt) {
         bcrypt.hash("password", salt, function (err, hash) {
             // Store hash in your password DB.
@@ -180,7 +181,7 @@ app.get('/encrypt-password', (req, res) => {
     });
 })
 
-app.get('/dcrypt-password', (req, res) => {
+router.get('/dcrypt-password', (req, res) => {
     bcrypt.compare("password", req.cookies.hash, function (err, result) {
         // result == true
         res.send(result)
@@ -192,13 +193,13 @@ app.get('/dcrypt-password', (req, res) => {
 
 
 
-app.get('/jwt-token-set', (req, res) => {
+router.get('/jwt-token-set', (req, res) => {
     const token = jwt.sign({ "email": "nitesh1@gmail.com" }, 'password')
     res.cookie('_token', token)
     res.send(token)
 })
 
-app.get('/jwt-token-unset', (req, res) => {
+router.get('/jwt-token-unset', (req, res) => {
     // jwt.verify(req.)
     // res.send(req.cookies._token)
 
@@ -207,4 +208,5 @@ app.get('/jwt-token-unset', (req, res) => {
 })
 
 
-app.listen(3000);
+
+module.exports=router

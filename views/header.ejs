@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="utf-8">
 
@@ -50,7 +49,7 @@
             </div>
           </div>
           <div class="ms-3">
-            <h6 class="mb-0">Paradise</h6>
+            <h6 class="mb-0"><%=  userSettingData.name %></h6>
             <span>Admin</span>
           </div>
         </div>
@@ -149,10 +148,10 @@
           <div class="nav-item dropdown">
             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
               <img class="rounded-circle me-lg-2" src="/img/uploads/settings/1713636809662405c94c500.png" alt="" style="width: 40px; height: 40px;">
-              <span class="d-none d-lg-inline-flex">Paradise</span>
+              <span class="d-none d-lg-inline-flex"><%=  userSettingData.name %></span>
             </a>
             <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
-              <p class="text-center">Welcome Paradise</p>
+              <p class="text-center">Welcome <%=  userSettingData.name %></p>
               <a href="/logout" class="dropdown-item"><i class="ri-logout-box-r-line me-2"></i>Log Out</a>
             </div>
           </div>
