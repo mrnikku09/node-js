@@ -37,7 +37,6 @@
   <div class="container-fluid position-relative d-flex p-0">
 
 
-
     <!-- Sidebar Start -->
     <div class="sidebar pe-4 pb-3">
       <nav class="navbar bg-secondary navbar-dark">
@@ -49,14 +48,14 @@
             </div>
           </div>
           <div class="ms-3">
-            <h6 class="mb-0"><%=  userSettingData.name %></h6>
+            <h6 class="mb-0"><%= typeof userSettingData !== "undefined" ? userSettingData?.name : "paradise" %></h6>
             <span>Admin</span>
           </div>
         </div>
         <div class="navbar-nav w-100">
-          <a href="/web/dashboard" class="nav-item nav-link <%= (typeof title !== 'undefined' && title == "Dashboard")?"active":"" %>"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
+          <a href="/admin/dashboard" class="nav-item nav-link <%= (typeof title !== 'undefined' && title == "Dashboard")?"active":"" %>"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
 
-          <a href="/web/user" class="nav-item nav-link <%= (typeof title !== 'undefined' && title == "User")?"active":"" %>"><i class="fa fa-user-alt me-2 me-2"></i>User</a>
+          <a href="/admin/user" class="nav-item nav-link <%= (typeof title !== 'undefined' && title == "User")?"active":"" %>"><i class="fa fa-user-alt me-2 me-2"></i>User</a>
 
 
           <!-- <a href="/todo" class="nav-item nav-link "><i class="ri-image-2-line me-2"></i>Todo</a> -->
@@ -148,11 +147,11 @@
           <div class="nav-item dropdown">
             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
               <img class="rounded-circle me-lg-2" src="/img/uploads/settings/1713636809662405c94c500.png" alt="" style="width: 40px; height: 40px;">
-              <span class="d-none d-lg-inline-flex"><%=  userSettingData.name %></span>
+              <span class="d-none d-lg-inline-flex"><%= typeof userSettingData !== "undefined" ? userSettingData?.name : "paradise" %></span>
             </a>
             <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
-              <p class="text-center">Welcome <%=  userSettingData.name %></p>
-              <a href="/web/logout" class="dropdown-item"><i class="ri-logout-box-r-line me-2"></i>Log Out</a>
+              <p class="text-center">Welcome <%= typeof userSettingData !== "undefined" ? userSettingData?.name : "paradise" %></p>
+              <a href="/admin/logout" class="dropdown-item"><i class="ri-logout-box-r-line me-2"></i>Log Out</a>
             </div>
           </div>
 

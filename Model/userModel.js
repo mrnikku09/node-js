@@ -11,4 +11,4 @@ const userData=mongoose.Schema({
     "password":String
 })
 
-module.exports=mongoose.model('data',userData)
+module.exports=mongoose.model('cs_users',userData)
