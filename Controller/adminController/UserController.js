@@ -39,6 +39,7 @@ const addUserProcess = (req, res) => {
     bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(password, salt, async (err, hashpassword) => {
             if (hashpassword) {
+                var _token=jwt.sign({"email":email},hashpassword)
                 if (_id && _id != "") {
 
                     let userObj = await userModel.findOne({ _id: _id })
@@ -50,10 +51,12 @@ const addUserProcess = (req, res) => {
                     userObj.name = name
                     userObj.username = username
                     userObj.email = email
+                    userObj._token = _token
                     userObj.save()
                 } else {
-                    const userObj = await userModel.create({ name, username, email, "password": hashpassword })
+                    let userObj = await userModel.create({ name, username, email, "password": hashpassword ,_token})
                 }
+
                 res.redirect('/admin/user')
             }
         })

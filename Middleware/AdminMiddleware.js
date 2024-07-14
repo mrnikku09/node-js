@@ -1,7 +1,8 @@
 const userModel=require('../Model/UserModel')
 
 const AdminloginMiddleware=async (req, res, next) => {
-    const userToken = req.cookies?.USER_AUTH_TOKEN;
+    const userToken = req.cookies.USER_AUTH_TOKEN;
+    // res.send(userToken)
     const user = await userModel.findOne({ _token: userToken });
     if (!user) {
         userSettingData = ""
