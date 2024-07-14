@@ -9,6 +9,7 @@ const blogData = mongoose.Schema({
         type: String,
         required: true
     },
+    blog_image:{type: String,default:null},
     blog_user_id: [{ type: String, required: true }],
     createdAt: {
         type: Date,

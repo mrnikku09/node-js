@@ -1,8 +1,21 @@
 const express=require('express')
 const app=express()
 const router=express.Router()
-const userModel = require('../Model/UserModel');
+const multer=require('multer')
+const path = require('path');
+const env=require('dotenv').config()
 
+const storage=multer.diskStorage({
+    destination:(req,file,cb)=>{
+        // const destinationPath = ;
+        return cb(null,'./public/img/uploads')
+    },
+    filename:(req,file,cb)=>{
+        return cb(null,`${Date.now()}-${file.originalname}`)
+    }
+})
+
+const upload=multer({storage})
 
 // Admin Middleware
 const AdminloginMiddleware = require('../Middleware/AdminMiddleware')
@@ -34,7 +47,7 @@ router.get('/delete-user/:_id',AdminloginMiddleware, deleteUser)
 // Blog
 router.get('/blog',AdminloginMiddleware,allBlog)
 router.get('/addblog/:_id?',AdminloginMiddleware,addblog)
-router.post('/add-blog-process',AdminloginMiddleware,addblogprocess)
+router.post('/add-blog-process',upload.single("blog_image"),AdminloginMiddleware,addblogprocess)
 router.get('/deleteblog/:_id',AdminloginMiddleware,deleteblog)
 
 
