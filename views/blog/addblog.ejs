@@ -1,5 +1,20 @@
 <%- include('../header.ejs') %>
-
+<style>
+  .video-container {
+    position: relative;
+    width: 560px;
+    height: 315px;
+  }
+  .video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0); /* Transparent */
+    cursor: pointer;
+  }
+</style>
 <div class="page-content">
   <div class="container-fluid">
     <div class="row">
@@ -46,6 +61,12 @@
                     <input type="text" class="form-control required " placeholder="blog_desc" id='blog_desc' value="<%= (typeof blogIdData !=="undefined" && blogIdData !="") ? blogIdData.blog_desc :"" %>" name="blog_desc" />
 
                   </div>
+                </div>
+                <div class="col-lg-12">
+                  <a href="/admin/blog">
+                  <video src="https://www.youtube.com/embed/MseIwZwkXyI?si=n-wL51MonMg28AX_"></video>
+                  <div class="video-overlay"></div>
+                </a>
                 </div>
                 <div class="col-lg-12">
                   <div class="mb-3">
@@ -104,5 +125,11 @@
     }
   }
 </script>
-
+<script>
+  document.getElementById('video-link').addEventListener('click', function(event) {
+    event.preventDefault(); // Prevent default anchor behavior
+    window.location.href = this.href; // Navigate to the specified href
+  });
+  
+  </script>
 <%- include('../footer.ejs') %>
